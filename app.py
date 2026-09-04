@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, redirect
 import mysql.connector
 from config import DB_CONFIG
 
@@ -22,6 +22,7 @@ def index():
    <p>Projeto iniciado com Python, Flask e MySQL.</p>
    <ul>
        <li><a href="/alunos">Ver alunos cadastrados</a></li>
+       <li><a href="/alunos/novo">Cadastrar novo aluno</a></li>
        <li><a href="/professores">Ver professores cadastrados</a></li>
        <li><a href="/bibliotecarios">Ver bibliotecários cadastrados</a></li>
        <li><a href="/livros">Ver livros cadastrados</a></li>
@@ -83,8 +84,54 @@ def listar_alunos():
    except Exception as erro:
        return f"Erro ao listar alunos: {erro}"
 
+@app.route("/alunos/novo")
+def formulario_aluno():
+    return """
+<h1>Cadastrar aluno</h1>
 
+<form method="POST" action="/alunos/cadastrar">
+ <label>Nome: </label></br>
+ <input type="text" name="nome" required></br>
 
+ <label>Série:</label></br>
+ <input type="text" name="serie" required></br>
+
+ <label>Turma:</label></br>
+ <input type="text" name="turma" required></br>
+
+ <label>Telefone:</label></br>
+ <input type="text" name="telefone" required></br>
+
+ <button type="submit">Salvar</button>
+</form>
+<br>
+<a href="/alunos"> Voltar para lista</a>
+"""
+
+@app.route("/alunos/cadastrar", methods=["POST"])
+def cadastrar_aluno():
+    nome = request.form["nome"]
+    serie = request.form["serie"]
+    turma = request.form["turma"]
+    telefone = request.form["telefone"]
+
+    conexao = conectar()
+    cursor = conexao.cursor()
+
+    sql = """
+ INSERT INTO aluno(nome, serie, turma, telefone)
+ values (%s,%s,%s,%s)
+ """
+
+    valores = (nome, serie, turma, telefone)
+
+    cursor.execute(sql, valores)
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
+
+    return redirect("/alunos")
 
 # --- LISTAR PROFESSORES ---
 @app.route("/professores")
