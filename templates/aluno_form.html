@@ -1,41 +1,42 @@
+
 {% extends "base.html" %}
 
 
 {% block conteudo %}
 
 
-<h2>Alunos Cadastrados</h2>
+<h2>Cadastrar Aluno</h2>
 
 
-<p>
-    <a href="/alunos/novo">Cadastrar novo aluno</a>
-</p>
+<form method="POST" action="/alunos/cadastrar">
 
 
-<table border="1" cellpadding="8">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>Série</th>
-            <th>Turma</th>
-            <th>Telefone</th>
-        </tr>
-    </thead>
+    <label>Nome:</label><br>
+    <input type="text" name="nome" required><br><br>
 
 
-    <tbody>
-        {% for aluno in alunos %}
-        <tr>
-            <td>{{ aluno.id_aluno }}</td>
-            <td>{{ aluno.nome }}</td>
-            <td>{{ aluno.serie }}</td>
-            <td>{{ aluno.turma }}</td>
-            <td>{{ aluno.telefone }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <label>Série:</label><br>
+    <input type="text" name="serie" required><br><br>
+
+
+    <label>Turma:</label><br>
+    <input type="text" name="turma" required><br><br>
+
+
+    <label>Telefone:</label><br>
+    <input type="text" name="telefone"><br><br>
+
+
+    <button type="submit">Salvar</button>
+
+
+</form>
+
+
+<br>
+
+
+<a href="/alunos">Voltar para lista</a>
 
 
 {% endblock %}
