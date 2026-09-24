@@ -402,5 +402,104 @@ def devolver_livro(id_emprestimo):
         return f"Erro ao devolver livro: {erro}"
 
 
+    ## Rota CRUD aluno
+@app.route("/alunos/editar/<int:id_aluno>")
+def editar_aluno(id_aluno):
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor(dictionary=True)
+
+
+        cursor.execute(
+            "SELECT * FROM aluno WHERE id_aluno = %s",
+            (id_aluno,)
+        )
+
+
+        aluno = cursor.fetchone()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return render_template("aluno_editar.html", aluno=aluno)
+
+
+    except Exception as erro:
+        return f"Erro ao carregar aluno: {erro}"
+
+
+
+
+@app.route("/alunos/atualizar/<int:id_aluno>", methods=["POST"])
+def atualizar_aluno(id_aluno):
+    try:
+        nome = request.form["nome"]
+        serie = request.form["serie"]
+        turma = request.form["turma"]
+        telefone = request.form["telefone"]
+
+
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+
+        sql = """
+            UPDATE aluno
+            SET nome = %s,
+                serie = %s,
+                turma = %s,
+                telefone = %s
+            WHERE id_aluno = %s
+        """
+
+
+        valores = (nome, serie, turma, telefone, id_aluno)
+
+
+        cursor.execute(sql, valores)
+        conexao.commit()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return redirect("/alunos")
+
+
+    except Exception as erro:
+        return f"Erro ao atualizar aluno: {erro}"
+
+
+
+
+@app.route("/alunos/excluir/<int:id_aluno>")
+def excluir_aluno(id_aluno):
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+
+        cursor.execute(
+            "DELETE FROM aluno WHERE id_aluno = %s",
+            (id_aluno,)
+        )
+
+
+        conexao.commit()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return redirect("/alunos")
+
+
+    except Exception as erro:
+        return f"Erro ao excluir aluno: {erro}"
+
 if __name__ == "__main__":
     app.run(debug=True)
