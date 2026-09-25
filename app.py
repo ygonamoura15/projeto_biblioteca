@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 import mysql.connector
 from config import DB_CONFIG
 
 
 app = Flask(__name__)
+app.secret_key = "biblioteca_escolar"
 
 
 def conectar():
@@ -64,6 +65,7 @@ def cadastrar_aluno():
 
         cursor.execute(sql, valores)
         conexao.commit()
+        flash("Aluno cadastrado com sucesso!", "sucesso")
 
 
         cursor.close()
@@ -74,7 +76,9 @@ def cadastrar_aluno():
 
 
     except Exception as erro:
-        return f"Erro ao cadastrar aluno: {erro}"
+            flash(f"Erro ao cadastrar aluno: {erro}", "erro")
+    return redirect("/alunos")
+
 
 
 # Rotas para livros
@@ -639,6 +643,7 @@ def atualizar_aluno(id_aluno):
 
         conexao = conectar()
         cursor = conexao.cursor()
+        flash("Aluno atualizado com sucesso!", "sucesso")
 
 
         sql = """
@@ -666,7 +671,9 @@ def atualizar_aluno(id_aluno):
 
 
     except Exception as erro:
-        return f"Erro ao atualizar aluno: {erro}"
+
+        flash(f"Erro ao atualizar aluno: {erro}", "erro")
+        return redirect("/alunos")
 
 
 
@@ -695,7 +702,8 @@ def excluir_aluno(id_aluno):
 
 
     except Exception as erro:
-        return f"Erro ao excluir aluno: {erro}"
+         flash("Não foi possível excluir o aluno. Verifique se ele possui empréstimos cadastrados.", "erro")
+    return redirect("/alunos")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
