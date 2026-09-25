@@ -140,6 +140,104 @@ def cadastrar_livro():
     except Exception as erro:
         return f"Erro ao cadastrar livro: {erro}"
 
+@app.route("/livros/editar/<int:id_livro>")
+def editar_livro(id_livro):
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor(dictionary=True)
+
+
+        cursor.execute(
+            "SELECT * FROM livro WHERE id_livro = %s",
+            (id_livro,)
+        )
+
+
+        livro = cursor.fetchone()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return render_template("livro_editar.html", livro=livro)
+
+
+    except Exception as erro:
+        return f"Erro ao carregar livro: {erro}"
+
+
+
+
+@app.route("/livros/atualizar/<int:id_livro>", methods=["POST"])
+def atualizar_livro(id_livro):
+    try:
+        titulo = request.form["titulo"]
+        autor = request.form["autor"]
+        categoria = request.form["categoria"]
+        status = request.form["status"]
+
+
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+
+        sql = """
+            UPDATE livro
+            SET titulo = %s,
+                autor = %s,
+                categoria = %s,
+                status = %s
+            WHERE id_livro = %s
+        """
+
+
+        valores = (titulo, autor, categoria, status, id_livro)
+
+
+        cursor.execute(sql, valores)
+        conexao.commit()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return redirect("/livros")
+
+
+    except Exception as erro:
+        return f"Erro ao atualizar livro: {erro}"
+
+
+
+
+@app.route("/livros/excluir/<int:id_livro>")
+def excluir_livro(id_livro):
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+
+        cursor.execute(
+            "DELETE FROM livro WHERE id_livro = %s",
+            (id_livro,)
+        )
+
+
+        conexao.commit()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return redirect("/livros")
+
+
+    except Exception as erro:
+        return f"Erro ao excluir livro: {erro}"
+
 
 # Rotas para biliotecario
 @app.route("/bibliotecarios")
@@ -163,6 +261,102 @@ def listar_bibliotecarios():
     except Exception as erro:
         return f"Erro ao listar bibliotecários: {erro}"
 
+@app.route("/bibliotecarios/editar/<int:id_bibliotecario>")
+def editar_bibliotecario(id_bibliotecario):
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor(dictionary=True)
+
+
+        cursor.execute(
+            "SELECT * FROM bibliotecario WHERE id_bibliotecario = %s",
+            (id_bibliotecario,)
+        )
+
+
+        bibliotecario = cursor.fetchone()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return render_template(
+            "bibliotecario_editar.html",
+            bibliotecario=bibliotecario
+        )
+
+
+    except Exception as erro:
+        return f"Erro ao carregar bibliotecário: {erro}"
+
+
+
+
+@app.route("/bibliotecarios/atualizar/<int:id_bibliotecario>", methods=["POST"])
+def atualizar_bibliotecario(id_bibliotecario):
+    try:
+        nome = request.form["nome"]
+        email = request.form["email"]
+
+
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+
+        sql = """
+            UPDATE bibliotecario
+            SET nome = %s,
+                email = %s
+            WHERE id_bibliotecario = %s
+        """
+
+
+        valores = (nome, email, id_bibliotecario)
+
+
+        cursor.execute(sql, valores)
+        conexao.commit()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return redirect("/bibliotecarios")
+
+
+    except Exception as erro:
+        return f"Erro ao atualizar bibliotecário: {erro}"
+
+
+
+
+@app.route("/bibliotecarios/excluir/<int:id_bibliotecario>")
+def excluir_bibliotecario(id_bibliotecario):
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+
+        cursor.execute(
+            "DELETE FROM bibliotecario WHERE id_bibliotecario = %s",
+            (id_bibliotecario,)
+        )
+
+
+        conexao.commit()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return redirect("/bibliotecarios")
+
+
+    except Exception as erro:
+        return f"Erro ao excluir bibliotecário: {erro}"
 
 
 
@@ -206,6 +400,8 @@ def cadastrar_bibliotecario():
 
     except Exception as erro:
         return f"Erro ao cadastrar bibliotecário: {erro}"
+    
+    
 
 # Rotas para empréstimos
 @app.route("/emprestimos")
